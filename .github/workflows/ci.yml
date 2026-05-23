@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  unit-tests:
+    name: Unit tests (validation + ingest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install test dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run pytest with coverage
+        run: |
+          pytest tests/ -v \
+            --cov=event_validation \
+            --cov=event_ingest \
+            --cov-fail-under=90 \
+            --cov-report=term-missing
+
+  docker-airflow:
+    name: Docker — build images and check DAGs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build images
+        run: |
+          docker build -t etl-airflow:local .
+          docker build -t etl-generator:local ./generator
+
+      - name: Start Postgres and init Airflow
+        run: |
+          docker compose up -d postgres
+          docker compose run --rm airflow-init
+
+      - name: Start scheduler (parse DAGs)
+        run: docker compose up -d airflow-scheduler
+
+      - name: Verify DAGs import without errors
+        run: |
+          docker compose exec -T airflow-scheduler airflow dags list-import-errors
+          docker compose exec -T airflow-scheduler airflow dags list | grep -E 'raw_events_processing|ecommerce_marts_update'
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
