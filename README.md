@@ -74,3 +74,10 @@ Reproduce locally:
 pip install -r requirements-dev.txt && pytest tests/ -v --cov=event_validation --cov=event_ingest --cov-fail-under=90
 # plus the docker commands from the CI job (see workflow file)
 ```
+## 🧱 STACK
+- Airflow
+- Phyton
+- Docker Compose
+- GitHub Actions CI
+- pytest
+- PostgreSQL
