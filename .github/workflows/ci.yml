@@ -39,6 +39,9 @@ jobs:
           docker build -t etl-airflow:local .
           docker build -t etl-generator:local ./generator
 
+      - name: Generate Fernet key for this CI run
+        run: echo "AIRFLOW_FERNET_KEY=$(python3 -c 'import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())')" > .env
+
       - name: Start Postgres and init Airflow
         run: |
           docker compose up -d postgres

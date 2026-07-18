@@ -22,6 +22,10 @@ From the project root:
 docker build -t etl-airflow:local .
 docker build -t etl-generator:local ./generator
 
+# 1b. Generate a local Fernet key (Airflow's encryption key for Connections/Variables —
+# never commit a real one; docker compose reads .env automatically)
+echo "AIRFLOW_FERNET_KEY=$(python3 -c 'import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())')" > .env
+
 # 2. Initialize Airflow DB + warehouse schemas
 docker compose up -d postgres
 docker compose run --rm airflow-init
@@ -76,7 +80,7 @@ pip install -r requirements-dev.txt && pytest tests/ -v --cov=event_validation -
 ```
 ## 🧱 STACK
 - Airflow
-- Phyton
+- Python
 - Docker Compose
 - GitHub Actions CI
 - pytest

@@ -20,5 +20,4 @@ while True:
     os.makedirs('/data/events/raw', exist_ok=True)
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(event, f)
-    os.chmod(filename, 0o666)  # allow Airflow worker to move files
     time.sleep(2)

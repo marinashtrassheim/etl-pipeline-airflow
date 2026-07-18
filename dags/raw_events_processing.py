@@ -55,6 +55,9 @@ with DAG(
         poke_interval=30,
         timeout=180,
         mode='poke',
+        # No files this interval isn't a failure — skip cleanly instead of
+        # retrying and backing up the next scheduled runs (max_active_runs=1).
+        soft_fail=True,
     )
 
     ingest_task = PythonOperator(
