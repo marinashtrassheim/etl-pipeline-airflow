@@ -4,8 +4,7 @@ An end-to-end batch pipeline that simulates ecommerce clickstream data, lands it
 
 ## Architecture
 
-<img width="2750" height="920" alt="image" src="https://github.com/user-attachments/assets/56b3410c-53ec-4014-b87b-8c3d39515fd4" />
-
+![Architecture](etl_image.png)
 
 ## Prerequisites
 
